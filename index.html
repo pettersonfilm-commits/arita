@@ -79,8 +79,8 @@
             object-fit: cover !important; 
         }
 
-        /* Distância de scroll quase zerada (120vh) para que a página desça sem prender o usuário */
-        .scroll-area { position: relative; height: 120vh; z-index: 10; pointer-events: none; }
+        /* Altura calculada para distribuir os frames de vídeo perfeitamente a cada rolagem do mouse sem afogar a animação */
+        .scroll-area { position: relative; height: 150vh; z-index: 10; pointer-events: none; }
         .content-layer { pointer-events: auto; }
 
         html.lenis, html.lenis body { height: auto; }
@@ -505,24 +505,16 @@
                 scrollTrigger: {
                     trigger: "#scroll-track", 
                     start: "top top", 
-                    end: "bottom bottom", 
-                    scrub: 0.1, 
+                    end: "bottom top", 
+                    scrub: 1.5, 
                     onUpdate: (self) => {
                         const percent = Math.round(self.progress * 100);
                         progressText.innerText = percent.toString().padStart(2, '0');
                         if (progressBar) gsap.set(progressBar, { y: Math.max(0, self.progress * 64) }); 
                         
-                        // Sistema "Smart Scrub": O vídeo sempre retorna ao frame ZERO absoluto.
-                        // Porém, os primeiros 5% do scroll do mouse DEVORAM 25% do vídeo em super velocidade
-                        // Isso resolve o problema de 'demora pra começar' mas garante que a tela inicial fique no começo real!
-                        let adjustedProgress = 0;
-                        if (self.progress <= 0.05) {
-                            adjustedProgress = (self.progress / 0.05) * 0.25;
-                        } else {
-                            adjustedProgress = 0.25 + ((self.progress - 0.05) / 0.95) * 0.75;
-                        }
-                        
-                        if (scrollyVideo) scrollyVideo.setTargetTimePercent(adjustedProgress);
+                        // Queima os primeiros 10% muito parados e rola o resto na suavidade do Scrub de 1.5s
+                        const smoothProgress = 0.10 + (self.progress * 0.90);
+                        if (scrollyVideo) scrollyVideo.setTargetTimePercent(smoothProgress);
                     }
                 }
             });
