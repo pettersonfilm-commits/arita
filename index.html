@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Arita - Videomaker Premium</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23ff3333'/></svg>">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,8 +79,8 @@
             object-fit: cover !important; 
         }
 
-        /* Distância de scroll encurtada de 400vh para 200vh para acelerar o ritmo da página */
-        .scroll-area { position: relative; height: 200vh; z-index: 10; pointer-events: none; }
+        /* Distância de scroll quase zerada (120vh) para que a página desça sem prender o usuário */
+        .scroll-area { position: relative; height: 120vh; z-index: 10; pointer-events: none; }
         .content-layer { pointer-events: auto; }
 
         html.lenis, html.lenis body { height: auto; }
@@ -110,7 +111,7 @@
             </div>
             <div>
                 <!-- Clean Hover Reflection - WhatsApp -->
-                <a href="#" class="relative inline-flex h-[40px] items-center justify-center overflow-hidden rounded-full border border-[#ff3333]/40 bg-black/40 backdrop-blur-xl px-6 gap-2 group focus:outline-none transition-all duration-500 hover:scale-[1.02] hover:border-[#ff3333] hover:shadow-[0_0_20px_rgba(255,51,51,0.3)] active:scale-95">
+                <a href="https://wa.me/5561981716621" target="_blank" class="relative inline-flex h-[40px] items-center justify-center overflow-hidden rounded-full border border-[#ff3333]/40 bg-black/40 backdrop-blur-xl px-6 gap-2 group focus:outline-none transition-all duration-500 hover:scale-[1.02] hover:border-[#ff3333] hover:shadow-[0_0_20px_rgba(255,51,51,0.3)] active:scale-95">
                     <!-- Hover Reflection Flash -->
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[150%] skew-x-[-25deg] group-hover:translate-x-[150%] transition-transform duration-[0.8s] ease-in-out z-0 pointer-events-none"></div>
 
@@ -148,7 +149,7 @@
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 reveal delay-700 w-full sm:w-auto">
                         
                         <!-- Clean Hover Reflection: "Contratar Arita" -->
-                        <a href="#" class="relative inline-flex h-[56px] w-full sm:w-auto sm:min-w-[260px] items-center justify-between overflow-hidden rounded-[2rem] border border-[#ff3333]/40 bg-black/40 backdrop-blur-xl px-8 py-4 group focus:outline-none transition-all duration-500 hover:scale-[1.02] hover:border-[#ff3333] hover:shadow-[0_0_25px_rgba(255,51,51,0.25)] active:scale-95">
+                        <a href="https://wa.me/5561981716621" target="_blank" class="relative inline-flex h-[56px] w-full sm:w-auto sm:min-w-[260px] items-center justify-between overflow-hidden rounded-[2rem] border border-[#ff3333]/40 bg-black/40 backdrop-blur-xl px-8 py-4 group focus:outline-none transition-all duration-500 hover:scale-[1.02] hover:border-[#ff3333] hover:shadow-[0_0_25px_rgba(255,51,51,0.25)] active:scale-95">
                             
                             <!-- Hover Reflection Flash Sweep -->
                             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[150%] skew-x-[-25deg] group-hover:translate-x-[150%] transition-transform duration-[1s] ease-in-out z-0 pointer-events-none"></div>
@@ -158,7 +159,7 @@
                         </a>
                         
                         <!-- Clean Hover Reflection: "Explorar Portfólio" -->
-                        <a href="#" class="relative inline-flex h-[56px] w-full sm:w-auto sm:min-w-[260px] items-center justify-center overflow-hidden rounded-[2rem] border border-[#ff3333]/40 bg-black/40 backdrop-blur-xl px-8 py-4 group focus:outline-none transition-all duration-500 hover:scale-[1.02] hover:border-[#ff3333] hover:shadow-[0_0_25px_rgba(255,51,51,0.25)] active:scale-95">
+                        <a href="#section-portfolio" class="relative inline-flex h-[56px] w-full sm:w-auto sm:min-w-[260px] items-center justify-center overflow-hidden rounded-[2rem] border border-[#ff3333]/40 bg-black/40 backdrop-blur-xl px-8 py-4 group focus:outline-none transition-all duration-500 hover:scale-[1.02] hover:border-[#ff3333] hover:shadow-[0_0_25px_rgba(255,51,51,0.25)] active:scale-95">
                             
                             <!-- Hover Reflection Flash Sweep -->
                             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[150%] skew-x-[-25deg] group-hover:translate-x-[150%] transition-transform duration-[1s] ease-in-out z-0 pointer-events-none"></div>
@@ -353,58 +354,59 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 w-full" id="portfolio-grid">
                 
                 <!-- Video 1 Vertical -->
-                <div class="w-full aspect-[9/16] relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item">
-                    <!-- Vertical Auto-playing Video -->
-                    <video src="https://assets.mixkit.co/videos/preview/mixkit-portrait-of-a-fashion-woman-with-silver-makeup-39875-large.mp4" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 filter grayscale-[40%] contrast-[1.1] group-hover:grayscale-0"></video>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100"></div>
+                <div class="w-full aspect-[9/16] relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item" onclick="toggleReelAudio(this)">
+                    <video src="Michelle Celebrone - reels- café_1.mp4" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"></video>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100 pointer-events-none"></div>
                     
-                    <!-- Botão de "Play" Animado no Centro -->
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100">
+                    <!-- Botão de Volume Animado no Centro -->
+                    <div class="audio-btn-layer absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100 pointer-events-none">
                         <div class="w-20 h-20 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
-                            <iconify-icon icon="solar:play-circle-bold-duotone" class="text-5xl text-white"></iconify-icon>
+                            <iconify-icon icon="solar:volume-cross-bold-duotone" class="audio-icon text-5xl text-white"></iconify-icon>
                         </div>
                     </div>
 
-                    <!-- Textos Subindo no Hover -->
-                    <div class="absolute bottom-8 left-8 right-8 flex flex-col justify-end z-10 overflow-hidden">
-                        <p class="text-[#8c0c04] font-mono text-[10px] tracking-widest uppercase translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">Direção</p>
-                        <h3 class="text-3xl md:text-4xl font-semibold text-white mt-1 translate-y-8 group-hover:translate-y-0 transition-transform duration-700 delay-75 ease-[cubic-bezier(0.16,1,0.3,1)]">Fashion Film</h3>
+                    <!-- Textos Sempre Visíveis -->
+                    <div class="absolute bottom-6 left-6 right-6 flex flex-col justify-end z-10 pointer-events-none">
+                        <p class="text-[#ff3333] drop-shadow-[0_0_8px_rgba(255,51,51,0.5)] font-mono text-[10px] tracking-widest uppercase mb-1">Michelle Celebrone</p>
+                        <h3 class="text-3xl md:text-3xl lg:text-4xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Café</h3>
                     </div>
                 </div>
 
                 <!-- Video 2 Vertical -->
-                <div class="w-full aspect-[9/16] lg:translate-y-16 relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item">
-                    <!-- Vertical Auto-playing Video -->
-                    <video src="https://assets.mixkit.co/videos/preview/mixkit-young-woman-in-a-fashion-pose-with-a-neon-light-39874-large.mp4" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 filter grayscale-[40%] contrast-[1.1] group-hover:grayscale-0"></video>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100"></div>
+                <div class="w-full aspect-[9/16] lg:translate-y-16 relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item" onclick="toggleReelAudio(this)">
+                    <video src="Michelle Celebrone - reels- elegancia.mp4" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"></video>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100 pointer-events-none"></div>
                     
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100">
+                    <!-- Botão de Volume Animado no Centro -->
+                    <div class="audio-btn-layer absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100 pointer-events-none">
                         <div class="w-20 h-20 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
-                            <iconify-icon icon="solar:play-circle-bold-duotone" class="text-5xl text-white"></iconify-icon>
+                            <iconify-icon icon="solar:volume-cross-bold-duotone" class="audio-icon text-5xl text-white"></iconify-icon>
                         </div>
                     </div>
 
-                    <div class="absolute bottom-8 left-8 right-8 flex flex-col justify-end z-10 overflow-hidden">
-                        <p class="text-[#8c0c04] font-mono text-[10px] tracking-widest uppercase translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">Editorial</p>
-                        <h3 class="text-3xl md:text-4xl font-semibold text-white mt-1 translate-y-8 group-hover:translate-y-0 transition-transform duration-700 delay-75 ease-[cubic-bezier(0.16,1,0.3,1)]">Magazine 01</h3>
+                    <!-- Textos Sempre Visíveis -->
+                    <div class="absolute bottom-6 left-6 right-6 flex flex-col justify-end z-10 pointer-events-none">
+                        <p class="text-[#ff3333] drop-shadow-[0_0_8px_rgba(255,51,51,0.5)] font-mono text-[10px] tracking-widest uppercase mb-1">Michelle Celebrone</p>
+                        <h3 class="text-3xl md:text-3xl lg:text-4xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Elegância</h3>
                     </div>
                 </div>
 
                 <!-- Video 3 Vertical -->
-                <div class="w-full aspect-[9/16] relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item">
-                    <!-- Vertical Auto-playing Video -->
-                    <video src="https://assets.mixkit.co/videos/preview/mixkit-fashion-model-in-an-avant-garde-outfit-39877-large.mp4" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 filter grayscale-[40%] contrast-[1.1] group-hover:grayscale-0"></video>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100"></div>
+                <div class="w-full aspect-[9/16] relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item" onclick="toggleReelAudio(this)">
+                    <video src="aniversário barco.MOV" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"></video>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100 pointer-events-none"></div>
                     
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100">
+                    <!-- Botão de Volume Animado no Centro -->
+                    <div class="audio-btn-layer absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100 pointer-events-none">
                         <div class="w-20 h-20 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
-                            <iconify-icon icon="solar:play-circle-bold-duotone" class="text-5xl text-white"></iconify-icon>
+                            <iconify-icon icon="solar:volume-cross-bold-duotone" class="audio-icon text-5xl text-white"></iconify-icon>
                         </div>
                     </div>
 
-                    <div class="absolute bottom-8 left-8 right-8 flex flex-col justify-end z-10 overflow-hidden">
-                        <p class="text-[#8c0c04] font-mono text-[10px] tracking-widest uppercase translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">Showcase</p>
-                        <h3 class="text-3xl md:text-4xl font-semibold text-white mt-1 translate-y-8 group-hover:translate-y-0 transition-transform duration-700 delay-75 ease-[cubic-bezier(0.16,1,0.3,1)]">Night Live</h3>
+                    <!-- Textos Sempre Visíveis -->
+                    <div class="absolute bottom-6 left-6 right-6 flex flex-col justify-end z-10 pointer-events-none">
+                        <p class="text-[#ff3333] drop-shadow-[0_0_8px_rgba(255,51,51,0.5)] font-mono text-[10px] tracking-widest uppercase mb-1">Evento</p>
+                        <h3 class="text-3xl md:text-3xl lg:text-4xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Aniversário no Barco</h3>
                     </div>
                 </div>
 
@@ -436,14 +438,14 @@
             <!-- Botão CTA Premium (Clean Hover Reflection Sweep) -->
             <div class="overflow-hidden p-6 -m-6 flex items-center justify-center w-full px-4 sm:px-0">
                 <!-- Hover Refraction Premium Button -->
-                <button class="relative inline-flex items-center justify-between h-[64px] w-full sm:w-auto sm:min-w-[300px] overflow-hidden rounded-[3rem] border border-[#ff3333]/40 bg-black/40 backdrop-blur-3xl px-10 py-4 group focus:outline-none transition-all duration-500 hover:scale-[1.02] hover:border-[#ff3333] hover:shadow-[0_0_35px_rgba(255,51,51,0.3)] active:scale-[0.97] cta-reveal">
+                <a href="https://wa.me/5561981716621" target="_blank" class="relative inline-flex items-center justify-between h-[64px] w-full sm:w-auto sm:min-w-[300px] overflow-hidden rounded-[3rem] border border-[#ff3333]/40 bg-black/40 backdrop-blur-3xl px-10 py-4 group focus:outline-none transition-all duration-500 hover:scale-[1.02] hover:border-[#ff3333] hover:shadow-[0_0_35px_rgba(255,51,51,0.3)] active:scale-[0.97] cta-reveal">
                     
                     <!-- Hover Reflection Flash Sweep -->
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[150%] skew-x-[-25deg] group-hover:translate-x-[150%] transition-transform duration-[1.2s] ease-in-out z-0 pointer-events-none"></div>
                     
                     <span class="relative z-10 text-xs font-mono tracking-[0.2em] font-bold text-[#ff3333] drop-shadow-[0_0_8px_rgba(255,51,51,0.5)] transition-colors duration-500 group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">INICIAR UM PROJETO</span>
                     <iconify-icon class="relative z-10 text-2xl text-[#ff3333] group-hover:text-white group-hover:translate-x-2 transition-all duration-500" icon="solar:arrow-right-up-linear"></iconify-icon>
-                </button>
+                </a>
             </div>
 
         </div>
@@ -476,8 +478,8 @@
             setTimeout(() => { document.querySelectorAll('.reveal').forEach(el => el.classList.add('active')); }, 400);
 
             const lenis = new Lenis({
-                duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
-                direction: 'vertical', gestureDirection: 'vertical', smooth: true, smoothTouch: false, touchMultiplier: 2,
+                duration: 0.7, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+                direction: 'vertical', gestureDirection: 'vertical', smooth: true, smoothTouch: false, touchMultiplier: 2.5,
             });
 
             lenis.on('scroll', ScrollTrigger.update);
@@ -627,6 +629,38 @@
                ======================================================== */
             // physics block stripped as requested by the user's preference for 'pure minimalism'.
         });
+
+        /* ========================================================
+           AUDIO CONTROLLER PARA O PORTFÓLIO
+           ======================================================== */
+        function toggleReelAudio(container) {
+            const video = container.querySelector('video');
+            const icon = container.querySelector('.audio-icon');
+
+            if (!video) return;
+
+            if (video.muted) {
+                // Mutar todos os outros Reels antes de ativar este
+                document.querySelectorAll('.video-vert-item').forEach(item => {
+                    const v = item.querySelector('video');
+                    const icn = item.querySelector('.audio-icon');
+                    if (v && v !== video) {
+                        v.muted = true;
+                        if (icn) icn.setAttribute('icon', 'solar:volume-cross-bold-duotone');
+                    }
+                });
+
+                // Reinicia o vídeo no momento 0 para garantir que o cliente o veja do ínicio
+                video.currentTime = 0;
+                video.muted = false;
+                
+                // Muda o ícone para "Alto" para feedback na tela
+                if (icon) icon.setAttribute('icon', 'solar:volume-loud-bold-duotone');
+            } else {
+                video.muted = true;
+                if (icon) icon.setAttribute('icon', 'solar:volume-cross-bold-duotone');
+            }
+        }
     </script>
 </body>
 </html>
