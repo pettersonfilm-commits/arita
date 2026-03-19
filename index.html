@@ -122,8 +122,10 @@
         </div>
     </header>
 
-    <!-- Parallax ScrollyVideo WebGL Engine -->
-    <div class="video-container" id="video-engine-container"></div>
+    <!-- Parallax Native Video Engine -->
+    <div class="video-container" id="video-engine-container">
+        <video id="hero-bg-video" src="Vídeo_pronto_com_zoom_preto.mp4" muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover"></video>
+    </div>
     
     <!-- Dark Gradient Overlay -->
     <div class="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none" style="background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%);"></div>
@@ -466,8 +468,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
     
-    <!-- ScrollyVideo - WebGL Video Decoding -->
-    <script src="https://cdn.jsdelivr.net/npm/scrolly-video@latest/dist/scrolly-video.js"></script>
+    <!-- Native HTML5 Decoding Engine implemented below via GSAP -->
 
     <!-- Interactions -->
     <script>
@@ -488,15 +489,16 @@
             gsap.registerPlugin(ScrollTrigger);
 
             /* ========================================================
-               SCROLLYVIDEO.JS - DEFINITIVE NATIVE MP4 DECODING TECH
+               NATIVE HTML5 VIDEO DECODING (Alta Compatibilidade p/ Novos Codecs)
                ======================================================== */
-            const scrollyVideo = new ScrollyVideo({
-                scrollyVideoContainer: "video-engine-container",
-                src: "Vídeo_pronto_com_zoom_preto.mp4",
-                cover: true,
-                fixed: false,
-                trackScroll: false // Desativado no modo global, agora ele mapeia DENTRO do Hero!
-            });
+            const heroVideo = document.getElementById('hero-bg-video');
+            // Força decodificação do primeiro frame (pulando 10% do preto/estático)
+            if (heroVideo) {
+                heroVideo.load();
+                heroVideo.addEventListener('loadedmetadata', () => { 
+                    heroVideo.currentTime = heroVideo.duration * 0.10; 
+                });
+            }
 
             const progressText = document.getElementById('scroll-percentage');
             const progressBar = document.querySelector('.scroll-progress-bar');
@@ -513,8 +515,10 @@
                         if (progressBar) gsap.set(progressBar, { y: Math.max(0, self.progress * 64) }); 
                         
                         // Queima os primeiros 10% muito parados e rola o resto na suavidade do Scrub de 1.5s
-                        const smoothProgress = 0.10 + (self.progress * 0.90);
-                        if (scrollyVideo) scrollyVideo.setTargetTimePercent(smoothProgress);
+                        if (heroVideo && heroVideo.readyState >= 1) {
+                            const smoothProgress = 0.10 + (self.progress * 0.90);
+                            heroVideo.currentTime = smoothProgress * heroVideo.duration;
+                        }
                     }
                 }
             });
