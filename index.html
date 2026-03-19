@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Arita - Videomaker Premium</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        stone: {
+                            50: '#F5F5F3', 100: '#EAEAE5', 200: '#D5D5D0', 300: '#A6A6A2',
+                            400: '#8A8A86', 500: '#737370', 600: '#545452', 700: '#434342',
+                            800: '#2A2A29', 900: '#1C1C1C',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            overscroll-behavior: none;
+        }
+
+        .reveal { opacity: 0; transform: translateY(2rem); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform, opacity; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .text-reveal-wrapper { overflow: hidden; display: inline-block; vertical-align: bottom; }
+        .text-reveal-content { transform: translateY(110%); opacity: 0; transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease; display: block; will-change: transform, opacity; }
+        .reveal-active .text-reveal-content { transform: translateY(0); opacity: 1; }
+        .delay-100 { transition-delay: 0.1s; } .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; } .delay-500 { transition-delay: 0.5s; }
+        .delay-700 { transition-delay: 0.7s; }
+        
+        .nav-load { opacity: 0; transform: translateY(-10px); transition: all 0.8s ease-out; will-change: transform, opacity; }
+        .nav-load.loaded { opacity: 1; transform: translateY(0); }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .video-container {
+            position: fixed; top: -1vh; left: -1vw; width: 102vw; height: 102vh; z-index: -2; overflow: hidden; background-color: #000;
+            /* Tratamento Cinematográfico de Cor, Contraste e Remoção de Blur */
+            filter: grayscale(15%) contrast(1.15) brightness(0.95);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        /* ScrollyVideo forces absolute covering internally, we just ensure no overflow */
+        .scrolly-video-canvas { width: 100%; height: 100%; object-fit: cover !important; }
+
+        .scroll-area { position: relative; height: 400vh; z-index: 10; pointer-events: none; }
+        .content-layer { pointer-events: auto; }
+
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+        .lenis.lenis-smooth iframe { pointer-events: none; }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-[#8c0c04] selection:text-white">
+
+    <!-- Top Navigation -->
+    <header class="fixed top-0 left-0 w-full z-50 border-b border-white/10 nav-load mix-blend-normal bg-black/40 backdrop-blur-md text-stone-300">
+        <div class="w-full flex justify-between items-center px-6 md:px-12 py-5">
+            <div class="flex items-center gap-6 md:gap-12">
+                <div class="flex items-center gap-2 border border-[#8c0c04]/30 rounded-[4px] px-3 py-1 bg-black/60 backdrop-blur-sm">
+                    <div class="w-2 h-2 rounded-full bg-[#8c0c04] animate-pulse"></div>
+                    <span class="text-[10px] font-mono tracking-widest text-[#8c0c04]">REC</span>
+                </div>
+                <span class="font-bold tracking-[0.2em] text-xl uppercase text-white">ARITA</span>
+                <div class="hidden lg:flex items-center gap-6 text-[10px] font-mono tracking-[0.2em] text-stone-500 uppercase">
+                    <div class="flex items-center gap-2"><iconify-icon icon="solar:camera-linear"></iconify-icon><span>F/2.8</span></div><span>|</span>
+                    <div class="flex items-center gap-2"><iconify-icon icon="solar:videocamera-record-linear"></iconify-icon><span>23.976 FPS</span></div><span>|</span>
+                    <div class="flex items-center gap-2"><iconify-icon icon="solar:sun-linear"></iconify-icon><span>ISO 800</span></div>
+                </div>
+            </div>
+            <div>
+                <!-- Minimalist Animated Border Light - WhatsApp -->
+                <a href="#" class="relative inline-flex h-[40px] items-center justify-center overflow-hidden rounded-full p-[1px] group focus:outline-none transition-transform duration-500 hover:scale-[1.02] active:scale-95">
+                    <!-- Luz correndo na Borda -->
+                    <span class="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#8c0c04_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0"></span>
+                    
+                    <!-- Botão Interno Sólido -> Agora Vidro (Glass) -->
+                    <span class="relative z-10 inline-flex h-full w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-black/40 backdrop-blur-xl px-6 text-[10px] md:text-xs font-mono tracking-[0.2em] text-[#8c0c04] transition-colors duration-500 group-hover:text-white uppercase">
+                        <!-- Click Reflection Flash (Aparece ao clicar 'active') -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[150%] skew-x-[-25deg] group-active:translate-x-[150%] transition-transform duration-300 ease-out z-0 pointer-events-none"></div>
+
+                        <iconify-icon icon="ic:baseline-whatsapp" class="relative z-10 text-lg transition-transform duration-500 ease-out group-hover:scale-110"></iconify-icon>
+                        <span class="relative z-10 transition-transform duration-500 ease-out group-hover:scale-[1.02]">WHATSAPP</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Parallax ScrollyVideo WebGL Engine -->
+    <div class="video-container" id="video-engine-container"></div>
+    
+    <!-- Dark Gradient Overlay -->
+    <div class="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none" style="background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%);"></div>
+
+    <!-- Scroll Track -->
+    <main class="scroll-area" id="scroll-track">
+        <div class="fixed top-0 left-0 w-full h-full text-white content-layer flex items-center">
+            <div class="w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 relative h-full pt-[80px]">
+                
+                <div class="col-span-1 md:col-span-8 flex flex-col justify-center h-full z-10 pb-16">
+                    <div class="mb-8 reveal flex items-center gap-3">
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#8c0c04]"></div>
+                        <span class="text-xs font-mono uppercase tracking-[0.2em] text-stone-300">CINEMATIC EXPERIENCE</span>
+                    </div>
+
+                    <h1 class="text-[3.5rem] md:text-[5.5rem] lg:text-[7.5rem] font-semibold tracking-tighter leading-[0.85] mb-8" id="hero-title">
+                        <span class="text-reveal-wrapper block"><span class="text-reveal-content delay-100 text-white">Capturando</span></span>
+                        <span class="text-reveal-wrapper block"><span class="text-reveal-content delay-200 text-white/70">a Essência</span></span>
+                        <span class="text-reveal-wrapper block"><span class="text-reveal-content delay-300 text-white">do Momento<span class="text-[#8c0c04]">.</span></span></span>
+                    </h1>
+
+                    <p class="text-[1.1rem] md:text-xl text-stone-300 max-w-xl reveal delay-500 mb-12 leading-[1.4] font-light">
+                        Serviços premium de captação e edição de vídeo.<br>
+                        Direção de arte cinematográfica aliada a tecnologia<br>
+                        de ponta para contar histórias que impactam.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 reveal delay-700">
+                        
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 reveal delay-700">
+                        
+                        <!-- Minimalist Animated Border Light: "Contratar Arita" -->
+                        <a href="#" class="relative inline-flex h-[56px] min-w-[260px] overflow-hidden rounded-[2rem] p-[1px] group focus:outline-none transition-transform duration-500 hover:scale-[1.02] active:scale-95">
+                            <!-- Animação Minimalista de Luz Giratória -->
+                            <span class="absolute inset-[-1000%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#8c0c04_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0"></span>
+                            
+                            <!-- Botão Interno Vidro (Glassmorphism) -->
+                            <span class="relative z-10 inline-flex h-full w-full items-center justify-between overflow-hidden rounded-[2rem] bg-black/40 backdrop-blur-xl px-8 py-4 text-[10px] md:text-xs font-mono tracking-[0.2em] text-stone-300 transition-colors duration-500 group-hover:text-white">
+                                <!-- Click Reflection Flash (Aparece ao clicar 'active') -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#8c0c04]/70 to-transparent -translate-x-[150%] skew-x-[-25deg] group-active:translate-x-[150%] transition-transform duration-300 ease-out z-0 pointer-events-none"></div>
+                                
+                                <span class="relative z-10">CONTRATAR ARITA</span>
+                                <iconify-icon class="relative z-10 text-lg text-[#8c0c04] group-hover:translate-x-1 transition-transform duration-500" icon="solar:arrow-right-up-linear"></iconify-icon>
+                            </span>
+                        </a>
+                        
+                        <!-- Minimalist Animated Border Light: "Explorar Portfólio" -->
+                        <a href="#" class="relative inline-flex h-[56px] min-w-[260px] overflow-hidden rounded-[2rem] p-[1px] group focus:outline-none transition-transform duration-500 hover:scale-[1.02] active:scale-95">
+                            <!-- Animação Minimalista de Luz Vermelha Giratória -->
+                            <span class="absolute inset-[-1000%] animate-[spin_5s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#8c0c04_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0"></span>
+                            
+                            <!-- Botão Interno Vidro (Glassmorphism) -->
+                            <span class="relative z-10 inline-flex h-full w-full items-center justify-center overflow-hidden rounded-[2rem] bg-black/40 backdrop-blur-xl px-8 text-[10px] md:text-xs font-mono tracking-[0.2em] text-stone-400 transition-colors duration-500 group-hover:text-white">
+                                <!-- Click Reflection Flash (Aparece ao clicar) -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[150%] skew-x-[-25deg] group-active:translate-x-[150%] transition-transform duration-300 ease-out z-0 pointer-events-none"></div>
+
+                                <span class="relative z-10">EXPLORAR PORTFÓLIO</span>
+                            </span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div class="hidden md:flex col-span-1 md:col-span-4 flex-col justify-end items-end h-[85vh] z-10 relative">
+                    <div class="absolute right-8 top-1/2 translate-y-[10%] flex flex-col items-center gap-8 mix-blend-screen reveal delay-700">
+                        <span class="text-[10px] font-mono text-stone-500 uppercase tracking-[0.3em] opacity-80" style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            SCROLL TO CONTROL
+                        </span>
+                        
+                        <div class="w-[2px] h-24 bg-white/20 relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-[32px] bg-[#8c0c04] shadow-[0_0_8px_#8c0c04] scroll-progress-bar rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 reveal delay-700 w-full flex justify-end">
+                        <span class="text-[10px] font-mono tracking-[0.3em] text-stone-500">
+                            <span class="text-white" id="scroll-percentage">00</span> / 100
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Section 2: A Essência -->
+    <section class="relative z-20 bg-[#080808] w-full min-h-screen py-24 md:py-32 flex items-center" id="section-essencia">
+        
+        <!-- Seamless Transition from Video (Gradient Feathering) -->
+        <div class="absolute top-0 left-0 w-full h-[50vh] -translate-y-full bg-gradient-to-b from-transparent to-[#080808] pointer-events-none"></div>
+
+        <!-- Container centralizado -->
+        <div class="w-full px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 max-w-[1800px] mx-auto items-center relative z-10">
+            
+            <!-- Esquerda: Imagem com Efeito Mask Reveal e Parallax interno -->
+            <div class="lg:col-span-5 h-[60vh] lg:h-[80vh] w-full relative overflow-hidden group img-reveal-wrapper" style="clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);">
+                <img src="envato-labs-image-edit (54).png" alt="Arita Portrait" class="w-full h-full object-cover img-parallax transform scale-[1.3] origin-center" />
+                <!-- Overlay Escuro para dar Requinte Premium -->
+                <div class="absolute inset-0 bg-black/20 transition-opacity duration-1000 group-hover:bg-black/0"></div>
+            </div>
+
+            <!-- Direita: Textos Premium -->
+            <div class="lg:col-span-7 flex flex-col justify-center text-container">
+                <!-- Label com Linha -->
+                <div class="flex items-center gap-4 mb-8 text-reveal-wrapper block line-wrapper">
+                    <div class="w-0 h-[1px] bg-[#8c0c04] red-line origin-left transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+                    <span class="text-[10px] sm:text-xs font-mono tracking-[0.3em] uppercase text-[#8c0c04] text-reveal-content delay-100">A Essência de Criar</span>
+                </div>
+
+                <!-- Título -->
+                <h2 class="text-4xl md:text-5xl lg:text-[4.5rem] font-semibold tracking-tighter leading-[1.0] mb-12">
+                    <span class="text-reveal-wrapper block pb-2"><span class="text-white text-reveal-content delay-200">A verdadeira intenção</span></span>
+                    <span class="text-reveal-wrapper block"><span class="text-stone-500 text-reveal-content delay-300">não se capta. Se sente.</span></span>
+                </h2>
+
+                <!-- Texto de Corpo -->
+                <div class="flex flex-col gap-6 text-stone-400 font-light text-[1.05rem] md:text-[1.2rem] leading-[1.6] max-w-2xl">
+                    <span class="text-reveal-wrapper block">
+                        <span class="text-reveal-content delay-400">
+                            Fazer um vídeo vai muito além de ajustar a lente e apertar o botão de gravar. É sobre entender o ritmo do que está acontecendo e traduzir o invisível em uma narrativa visual coerente e profunda.
+                        </span>
+                    </span>
+                    <span class="text-reveal-wrapper block">
+                        <span class="text-reveal-content delay-500">
+                            A técnica importa, mas a verdadeira mágica mora no <strong class="text-white font-medium">storytelling</strong>. É a habilidade atenta de orquestrar cada take para conduzir emoções reais. Cada detalhe que entra no quadro deve contar uma história e ter um propósito claro e memorável.
+                        </span>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Section 3: Serviços (Tipos de Captação) -->
+    <section class="relative z-30 bg-[#F5F5F3] w-full py-24 md:py-32 lg:py-40 text-stone-900 overflow-hidden" id="section-servicos">
+        <div class="w-full px-6 md:px-12 max-w-[1800px] mx-auto">
+            
+            <!-- Cabeçalho da Seção -->
+            <div class="flex flex-col items-center text-center mb-24">
+                <div class="flex items-center gap-4 mb-8 text-reveal-wrapper block servico-linha-wrapper">
+                    <span class="text-[10px] sm:text-xs font-mono tracking-[0.3em] uppercase text-[#8c0c04] text-reveal-content delay-100 dark-to-light">Especialidades</span>
+                    <div class="w-0 h-[1px] bg-[#8c0c04] red-line-2 origin-left transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+                </div>
+
+                <h2 class="text-4xl md:text-5xl lg:text-[4.5rem] font-semibold tracking-tighter leading-[1.0] text-stone-900 max-w-4xl mx-auto">
+                    <span class="text-reveal-wrapper block pb-2"><span class="text-reveal-content delay-200">A técnica exata para</span></span>
+                    <span class="text-reveal-wrapper block"><span class="text-stone-400 text-reveal-content delay-300">cada formato de narrativa.</span></span>
+                </h2>
+            </div>
+
+            <!-- Grid de Serviços (Bento Squares) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 lg:mt-24 max-w-6xl mx-auto">
+                
+                <!-- Card 1 -->
+                <div class="service-square bg-white border border-stone-200 p-10 lg:p-14 flex flex-col justify-between aspect-square md:aspect-[4/3] group hover:bg-[#080808] transition-colors duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden relative">
+                    <div class="flex justify-between items-start relative z-10">
+                        <span class="text-xs lg:text-sm font-mono tracking-widest text-stone-400 group-hover:text-stone-500 transition-colors duration-700">01 //</span>
+                        <div class="w-12 h-12 rounded-full border border-stone-200 flex items-center justify-center group-hover:border-white/20 group-hover:bg-white/10 transition-all duration-700">
+                            <iconify-icon icon="solar:videocamera-record-linear" class="text-xl text-stone-900 group-hover:text-white transition-colors duration-700"></iconify-icon>
+                        </div>
+                    </div>
+                    <div class="mt-8 relative z-10">
+                        <h3 class="text-3xl lg:text-4xl font-semibold tracking-tighter text-stone-900 group-hover:text-white transition-colors duration-700 mb-4 lg:mb-6">Cine-Institucional</h3>
+                        <p class="text-stone-500 font-light leading-relaxed group-hover:text-stone-400 transition-colors duration-700 max-w-sm">
+                            Vídeos corporativos que fogem do clichê. Captação de entrevistas e a essência do negócio com um forte viés cinematográfico.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="service-square bg-white border border-stone-200 p-10 lg:p-14 flex flex-col justify-between aspect-square md:aspect-[4/3] group hover:bg-[#080808] transition-colors duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden relative">
+                    <div class="flex justify-between items-start relative z-10">
+                        <span class="text-xs lg:text-sm font-mono tracking-widest text-stone-400 group-hover:text-stone-500 transition-colors duration-700">02 //</span>
+                        <div class="w-12 h-12 rounded-full border border-stone-200 flex items-center justify-center group-hover:border-white/20 group-hover:bg-white/10 transition-all duration-700">
+                            <iconify-icon icon="solar:gallery-favourite-linear" class="text-xl text-stone-900 group-hover:text-white transition-colors duration-700"></iconify-icon>
+                        </div>
+                    </div>
+                    <div class="mt-8 relative z-10">
+                        <h3 class="text-3xl lg:text-4xl font-semibold tracking-tighter text-stone-900 group-hover:text-white transition-colors duration-700 mb-4 lg:mb-6">Eventos Únicos</h3>
+                        <p class="text-stone-500 font-light leading-relaxed group-hover:text-stone-400 transition-colors duration-700 max-w-sm">
+                            Cobertura orgânica e invisível. Capturamos a vida e a grandiosidade de experiências exclusivas sem interferência.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="service-square bg-white border border-stone-200 p-10 lg:p-14 flex flex-col justify-between aspect-square md:aspect-[4/3] group hover:bg-[#080808] transition-colors duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden relative">
+                    <div class="flex justify-between items-start relative z-10">
+                        <span class="text-xs lg:text-sm font-mono tracking-widest text-stone-400 group-hover:text-stone-500 transition-colors duration-700">03 //</span>
+                        <div class="w-12 h-12 rounded-full border border-stone-200 flex items-center justify-center group-hover:border-white/20 group-hover:bg-white/10 transition-all duration-700">
+                            <iconify-icon icon="solar:star-ring-linear" class="text-xl text-stone-900 group-hover:text-white transition-colors duration-700"></iconify-icon>
+                        </div>
+                    </div>
+                    <div class="mt-8 relative z-10">
+                        <h3 class="text-3xl lg:text-4xl font-semibold tracking-tighter text-stone-900 group-hover:text-white transition-colors duration-700 mb-4 lg:mb-6">Lifestyle & Luxo</h3>
+                        <p class="text-stone-500 font-light leading-relaxed group-hover:text-stone-400 transition-colors duration-700 max-w-sm">
+                            Foco absurdo em detalhes, texturas e sonoridade para despertar o desejo imediato de consumo em marcas premium.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="service-square bg-white border border-stone-200 p-10 lg:p-14 flex flex-col justify-between aspect-square md:aspect-[4/3] group hover:bg-[#080808] transition-colors duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden relative">
+                    <div class="flex justify-between items-start relative z-10">
+                        <span class="text-xs lg:text-sm font-mono tracking-widest text-stone-400 group-hover:text-stone-500 transition-colors duration-700">04 //</span>
+                        <div class="w-12 h-12 rounded-full border border-stone-200 flex items-center justify-center group-hover:border-white/20 group-hover:bg-white/10 transition-all duration-700">
+                            <iconify-icon icon="solar:clapperboard-play-linear" class="text-xl text-stone-900 group-hover:text-white transition-colors duration-700"></iconify-icon>
+                        </div>
+                    </div>
+                    <div class="mt-8 relative z-10">
+                        <h3 class="text-3xl lg:text-4xl font-semibold tracking-tighter text-stone-900 group-hover:text-white transition-colors duration-700 mb-4 lg:mb-6">O Mini-Doc</h3>
+                        <p class="text-stone-500 font-light leading-relaxed group-hover:text-stone-400 transition-colors duration-700 max-w-sm">
+                            O formato rei do Storytelling moderno. Narrativas imersivas e estruturadas como cinema para criar conexões reais.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Section 4: Portfólio (Vídeos na Vertical) -->
+    <section class="relative z-40 bg-[#060606] w-full py-24 md:py-32" id="section-portfolio">
+        
+        <div class="w-full px-6 md:px-12 max-w-[1800px] mx-auto">
+            
+            <!-- Cabeçalho do Portfólio -->
+            <div class="flex flex-col md:flex-row justify-between md:items-end mb-16 md:mb-24 gap-8">
+                <div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-[1px] bg-[#8c0c04]"></div>
+                        <span class="text-[#8c0c04] text-[10px] md:text-xs font-mono tracking-[0.3em] uppercase">Showcase</span>
+                    </div>
+                    <h2 class="text-6xl md:text-8xl lg:text-[7rem] font-semibold tracking-tighter text-white leading-[0.9]">
+                        Trabalhos<br><span class="text-stone-700">em destaque.</span>
+                    </h2>
+                </div>
+                <p class="text-stone-400 max-w-sm text-base md:text-lg font-light leading-relaxed pb-2">
+                    Uma curadoria visual dos nossos projetos mais desafiadores, formatados nativamente para alto engajamento.
+                </p>
+            </div>
+
+            <!-- Grid de Vídeos na Vertical (Formato 9:16) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 w-full" id="portfolio-grid">
+                
+                <!-- Video 1 Vertical -->
+                <div class="w-full aspect-[9/16] relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item">
+                    <!-- Placeholder Imagem Vertical (Moda/Retrato) -->
+                    <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=987&auto=format&fit=crop" alt="Fashion Film" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 filter grayscale-[40%] contrast-[1.1] group-hover:grayscale-0" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100"></div>
+                    
+                    <!-- Botão de "Play" Animado no Centro -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100">
+                        <div class="w-20 h-20 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
+                            <iconify-icon icon="solar:play-circle-bold-duotone" class="text-5xl text-white"></iconify-icon>
+                        </div>
+                    </div>
+
+                    <!-- Textos Subindo no Hover -->
+                    <div class="absolute bottom-8 left-8 right-8 flex flex-col justify-end z-10 overflow-hidden">
+                        <p class="text-[#8c0c04] font-mono text-[10px] tracking-widest uppercase translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">Direção</p>
+                        <h3 class="text-3xl md:text-4xl font-semibold text-white mt-1 translate-y-8 group-hover:translate-y-0 transition-transform duration-700 delay-75 ease-[cubic-bezier(0.16,1,0.3,1)]">Fashion Film</h3>
+                    </div>
+                </div>
+
+                <!-- Video 2 Vertical -->
+                <div class="w-full aspect-[9/16] lg:translate-y-16 relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item">
+                    <!-- Placeholder Imagem Vertical (Urbano/Carro) -->
+                    <img src="https://images.unsplash.com/photo-1600706432502-77a0e2e3271a?q=80&w=987&auto=format&fit=crop" alt="Editorial" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 filter grayscale-[40%] contrast-[1.1] group-hover:grayscale-0" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100"></div>
+                    
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100">
+                        <div class="w-20 h-20 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
+                            <iconify-icon icon="solar:play-circle-bold-duotone" class="text-5xl text-white"></iconify-icon>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-8 left-8 right-8 flex flex-col justify-end z-10 overflow-hidden">
+                        <p class="text-[#8c0c04] font-mono text-[10px] tracking-widest uppercase translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">Editorial</p>
+                        <h3 class="text-3xl md:text-4xl font-semibold text-white mt-1 translate-y-8 group-hover:translate-y-0 transition-transform duration-700 delay-75 ease-[cubic-bezier(0.16,1,0.3,1)]">Magazine 01</h3>
+                    </div>
+                </div>
+
+                <!-- Video 3 Vertical -->
+                <div class="w-full aspect-[9/16] relative group cursor-pointer overflow-hidden rounded-[8px] border border-white/10 video-vert-item">
+                    <!-- Placeholder Imagem Vertical (Concerto/Energia) -->
+                    <img src="https://images.unsplash.com/photo-1540039155732-6761b54f6057?q=80&w=987&auto=format&fit=crop" alt="Stage Light" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 filter grayscale-[40%] contrast-[1.1] group-hover:grayscale-0" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent transition-opacity duration-1000 opacity-80 group-hover:opacity-100"></div>
+                    
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 scale-90 group-hover:scale-100">
+                        <div class="w-20 h-20 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
+                            <iconify-icon icon="solar:play-circle-bold-duotone" class="text-5xl text-white"></iconify-icon>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-8 left-8 right-8 flex flex-col justify-end z-10 overflow-hidden">
+                        <p class="text-[#8c0c04] font-mono text-[10px] tracking-widest uppercase translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">Showcase</p>
+                        <h3 class="text-3xl md:text-4xl font-semibold text-white mt-1 translate-y-8 group-hover:translate-y-0 transition-transform duration-700 delay-75 ease-[cubic-bezier(0.16,1,0.3,1)]">Night Live</h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: CTA Final & Footer -->
+    <section class="relative z-50 bg-[#F5F5F3] w-full min-h-[80vh] flex flex-col items-center justify-center pt-40 pb-16 overflow-hidden" id="section-cta">
+        
+        <!-- Background Grain/Texture (Sútil) -->
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+
+        <div class="flex flex-col items-center z-10 w-full">
+            
+            <!-- Label -->
+            <div class="mb-10 lg:mb-16 overflow-hidden">
+                <span class="text-[#8c0c04] text-[10px] md:text-xs font-mono tracking-[0.3em] uppercase block translate-y-full opacity-0 cta-reveal">
+                    Disponível para Projetos
+                </span>
+            </div>
+
+            <!-- Headline "Vamos criar algo épico." -->
+            <h2 class="text-6xl md:text-8xl lg:text-[10rem] font-semibold tracking-tighter text-center leading-[0.95] md:leading-[0.85] mb-16 lg:mb-24 px-6 w-full max-w-7xl">
+                <span class="block overflow-hidden pb-2 lg:pb-6"><span class="block translate-y-[110%] opacity-0 cta-reveal text-stone-900">Vamos criar</span></span>
+                <span class="block overflow-hidden"><span class="block translate-y-[110%] opacity-0 cta-reveal text-stone-400">algo épico.</span></span>
+            </h2>
+
+            <!-- Botão CTA Premium (Minimalist Animated Border Light + Glass) -->
+            <div class="overflow-hidden p-6 -m-6 flex items-center justify-center">
+                <!-- Botão premium invertido (Background escuro para o layout branco) -->
+                <button class="relative inline-flex h-[64px] min-w-[300px] overflow-hidden rounded-[3rem] p-[1px] group focus:outline-none transition-transform duration-500 hover:scale-[1.02] active:scale-[0.97] cta-reveal">
+                    
+                    <!-- Red Premium Reflection Animating Border -->
+                    <span class="absolute inset-[-1000%] animate-[spin_5s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#8c0c04_50%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0"></span>
+
+                    <!-- Botão Interno Dark Glass -->
+                    <span class="relative z-10 inline-flex h-full w-full items-center justify-center overflow-hidden rounded-[3rem] bg-[#080808]/90 backdrop-blur-md px-12 text-[10px] md:text-xs font-mono tracking-[0.2em] text-stone-300 transition-colors duration-500 group-hover:text-white">
+                        <!-- Click Reflection Flash (Aparece ao clicar 'active') -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#8c0c04]/60 to-transparent -translate-x-[150%] skew-x-[-25deg] group-active:translate-x-[150%] transition-transform duration-300 ease-out z-0 pointer-events-none"></div>
+
+                        <span class="relative z-10">INICIAR UM PROJETO</span>
+                        <iconify-icon class="relative z-10 text-xl text-[#8c0c04] ml-4 transition-transform duration-500 ease-out group-hover:translate-x-1 flex items-center" icon="solar:arrow-right-up-linear"></iconify-icon>
+                    </span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Footer Simples e Minimalista (Rodapé) -->
+        <footer class="absolute bottom-8 w-full px-6 md:px-12 flex justify-between items-center text-stone-400 text-[9px] md:text-[10px] font-mono tracking-widest uppercase cta-reveal opacity-0 translate-y-4">
+            <span class="select-none">© 2026 ARITA VIDEOMAKER</span>
+            <div class="flex gap-6 md:gap-10">
+                <a href="#" class="hover:text-stone-900 transition-colors duration-500 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-[#8c0c04] hover:after:w-full after:transition-all after:duration-500">Instagram</a>
+                <a href="#" class="hover:text-stone-900 transition-colors duration-500 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-[#8c0c04] hover:after:w-full after:transition-all after:duration-500">Vimeo</a>
+            </div>
+        </footer>
+
+    </section>
+
+    <!-- Ext. Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    
+    <!-- ScrollyVideo - WebGL Video Decoding -->
+    <script src="https://cdn.jsdelivr.net/npm/scrolly-video@latest/dist/scrolly-video.js"></script>
+
+    <!-- Interactions -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            setTimeout(() => { document.querySelector('header').classList.add('loaded'); }, 100);
+            setTimeout(() => { const h = document.getElementById('hero-title'); if (h) h.classList.add('reveal-active'); }, 300);
+            setTimeout(() => { document.querySelectorAll('.reveal').forEach(el => el.classList.add('active')); }, 400);
+
+            const lenis = new Lenis({
+                duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+                direction: 'vertical', gestureDirection: 'vertical', smooth: true, smoothTouch: false, touchMultiplier: 2,
+            });
+
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+            gsap.ticker.lagSmoothing(0);
+            gsap.registerPlugin(ScrollTrigger);
+
+            /* ========================================================
+               SCROLLYVIDEO.JS - DEFINITIVE NATIVE MP4 DECODING TECH
+               ======================================================== */
+            const scrollyVideo = new ScrollyVideo({
+                scrollyVideoContainer: "video-engine-container",
+                src: "Vídeo_pronto_com_zoom_preto.mp4",
+                cover: true,
+                fixed: false,
+                trackScroll: false // Desativado no modo global, agora ele mapeia DENTRO do Hero!
+            });
+
+            const progressText = document.getElementById('scroll-percentage');
+            const progressBar = document.querySelector('.scroll-progress-bar');
+            
+            gsap.timeline({
+                scrollTrigger: {
+                    trigger: "#scroll-track", 
+                    start: "top top", 
+                    end: "bottom bottom", 
+                    scrub: 0.1, 
+                    onUpdate: (self) => {
+                        const percent = Math.round(self.progress * 100);
+                        progressText.innerText = percent.toString().padStart(2, '0');
+                        if (progressBar) gsap.set(progressBar, { y: Math.max(0, self.progress * 64) }); 
+                        
+                        // Garante que o vídeo termina EXATAMENTE quando o usuário chega no fim do track do Hero
+                        if (scrollyVideo) scrollyVideo.setTargetTimePercent(self.progress);
+                    }
+                }
+            });
+
+            // Fade out do conteúdo tipográfico quando descer a página (Hero)
+            gsap.to('.content-layer', {
+                opacity: 0.1, y: -100, ease: "power1.inOut",
+                scrollTrigger: { trigger: "#scroll-track", start: "25% top", end: "75% top", scrub: true }
+            });
+
+            /* ========================================================
+               SECTION 2: A ESSÊNCIA (Image Mask Reveal & Parallax)
+               ======================================================== */
+            const sessaoEssencia = document.getElementById('section-essencia');
+            if (sessaoEssencia) {
+                
+                // Cortina revelando a imagem de cima para baixo
+                gsap.to('.img-reveal-wrapper', { 
+                    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+                    duration: 1.5, delay: 1, ease: "power4.inOut",
+                    scrollTrigger: { trigger: '#section-essencia', start: "top 60%" }
+                });
+
+                // Zoom out suave dentro da máscara (parallax in-place)
+                gsap.to('.img-parallax', { 
+                    scale: 1, duration: 2, delay: 1, ease: "power3.out",
+                    scrollTrigger: { trigger: '#section-essencia', start: "top 60%" }
+                });
+
+                // Acionar cascata de textos (A linha vermelha cresce junto com os blocos text-reveal-content)
+                ScrollTrigger.create({
+                    trigger: '#section-essencia',
+                    start: "top 65%",
+                    onEnter: () => {
+                        setTimeout(() => {
+                            sessaoEssencia.classList.add('reveal-active');
+                            document.querySelector('.red-line').style.width = '3rem'; // Expande a linha do label
+                        }, 1000); // 1 segundo de atraso dramático
+                    }
+                });
+            }
+
+            /* ========================================================
+               SECTION 3: SERVIÇOS (Tipos de Captação - Grid Reveal)
+               ======================================================== */
+            const sessaoServicos = document.getElementById('section-servicos');
+            if (sessaoServicos) {
+                // Ativar Textos
+                ScrollTrigger.create({
+                    trigger: '#section-servicos',
+                    start: "top 65%",
+                    onEnter: () => {
+                        sessaoServicos.classList.add('reveal-active');
+                        document.querySelector('.red-line-2').style.width = '3rem'; // Expande a 2ª linha do label
+                    }
+                });
+
+                // Entrada Pesada e Luxuosa dos Cards (Bento Boxes)
+                gsap.fromTo('.service-square', 
+                    { opacity: 0, y: 120, scale: 0.95 },
+                    { 
+                        opacity: 1, y: 0, scale: 1, duration: 1.6, ease: "power4.out", stagger: 0.15,
+                        scrollTrigger: { trigger: '#section-servicos', start: "top 50%" }
+                    }
+                );
+            }
+
+            /* ========================================================
+               SECTION 4: PORTFÓLIO (Vertical Cascade Reveal)
+               ======================================================== */
+            const portfolioGrid = document.getElementById('portfolio-grid');
+            if (portfolioGrid) {
+                // Entrada majestosa subindo e crescendo do Grid Vertical
+                gsap.fromTo('.video-vert-item', 
+                    { opacity: 0, y: 150, scale: 0.9 },
+                    { 
+                        opacity: 1, y: 0, scale: 1, duration: 1.8, ease: "power4.out", stagger: 0.2,
+                        scrollTrigger: { trigger: '#portfolio-grid', start: "top 65%" }
+                    }
+                );
+            }
+
+            /* ========================================================
+               SECTION 5: CTA FINAL (Text Block Reveal)
+               ======================================================== */
+            const sessaoCta = document.getElementById('section-cta');
+            if (sessaoCta) {
+                // Cascata poderosa subindo verticalmente (Label -> "Vamos criar" -> "algo épico" -> Botão -> Footer)
+                gsap.to('.cta-reveal', {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1.5,
+                    ease: "power4.out",
+                    stagger: 0.12, // Um item puxa o outro com um leve atraso
+                    scrollTrigger: {
+                        trigger: '#section-cta',
+                        start: "top 65%"
+                    }
+                });
+            }
+
+            /* ========================================================
+               MINIMALIST BUTTON APPROACH - MAGNETIC PHYSICS REMOVED
+               ======================================================== */
+            // physics block stripped as requested by the user's preference for 'pure minimalism'.
+        });
+    </script>
+</body>
+</html>
