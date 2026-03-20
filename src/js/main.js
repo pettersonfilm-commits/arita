@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollTrigger: { trigger: "#scroll-track", start: "25% top", end: "75% top", scrub: true }
     });
 
+
     /* ========================================================
        SECTION 2: A ESSÊNCIA (Image Mask Reveal & Parallax)
        ======================================================== */
