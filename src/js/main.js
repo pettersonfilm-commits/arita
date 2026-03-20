@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.ticker.lagSmoothing(0);
     gsap.registerPlugin(ScrollTrigger);
 
+    // Fixes the page jump on mobile devices when the address bar disappears/reappears
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
     /* ========================================================
        SCROLLYVIDEO.JS - DEFINITIVE NATIVE MP4 DECODING TECH
        ======================================================== */
