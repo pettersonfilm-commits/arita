@@ -513,11 +513,19 @@
             const progressText = document.getElementById('scroll-percentage');
             const progressBar = document.querySelector('.scroll-progress-bar');
             
+            // Trava a altura do Hero em pixels reais para que a barra de endereços mobile não crie bugs de salto de layout.
+            const heroArea = document.getElementById('hero-section');
+            if (heroArea && window.innerWidth < 768) {
+                heroArea.style.height = window.innerHeight + 'px';
+            }
+            
+            const isMobile = window.innerWidth < 768;
+
             // Fixa (Pin) o Hero por uma distância suficiente (250% = mais devagar, sem aceleração)
             ScrollTrigger.create({
                 trigger: "#hero-section",
                 start: "top top",
-                end: () => window.innerWidth < 768 ? "+=120%" : "+=250%", // Reduzido no mobile para sair da primeira dobra mais rápido
+                end: isMobile ? "+=120%" : "+=250%", // Definido fixo para evitar recálculos dinâmicos
                 pin: true,
                 scrub: 1, // Suaviza o stuttering de forma cinematográfica
                 onUpdate: (self) => {
@@ -540,7 +548,7 @@
                 scrollTrigger: { 
                     trigger: "#hero-section", 
                     start: "top top", 
-                    end: () => window.innerWidth < 768 ? "+=40%" : "+=60%", 
+                    end: isMobile ? "+=50%" : "+=60%", 
                     scrub: true 
                 }
             });
