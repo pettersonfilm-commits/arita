@@ -5,10 +5,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Arita - Videomaker Premium</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23ff3333'/></svg>">
-    
-    <!-- Preload Hero Video -->
-    <link rel="preload" href="Vídeo_pronto_com_zoom_preto.mp4" as="video" type="video/mp4">
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -132,10 +128,10 @@
         <!-- Dark Gradient Overlay -->
         <div class="absolute inset-0 z-[1] pointer-events-none" style="background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%);"></div>
 
-        <div class="w-full text-white content-layer flex items-center absolute inset-0 pt-[80px]">
-            <div class="w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 relative pb-20">
+        <div class="w-full text-white content-layer flex items-center absolute inset-0 pt-[120px] md:pt-[80px]">
+            <div class="w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 relative pb-4 md:pb-20 mt-8 md:mt-0">
                 
-                <div class="col-span-1 md:col-span-8 flex flex-col justify-center h-full z-10 pb-16">
+                <div class="col-span-1 md:col-span-8 flex flex-col justify-center h-full z-10 pb-0 md:pb-16">
                     <h1 class="text-[3rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[7.5rem] font-semibold tracking-tighter leading-[0.85] mb-6 sm:mb-8" id="hero-title">
                         <span class="text-reveal-wrapper block"><span class="text-reveal-content delay-100 text-white">Capturando</span></span>
                         <span class="text-reveal-wrapper block"><span class="text-reveal-content delay-200 text-white/70">a Essência</span></span>
@@ -496,19 +492,22 @@
                ======================================================== */
             let scrollyVideo = null;
             if (typeof ScrollyVideo !== 'undefined') {
-                scrollyVideo = new ScrollyVideo({
-                    scrollyVideoContainer: "video-engine-container",
-                    src: "Vídeo_pronto_com_zoom_preto.mp4",
-                    cover: true,
-                    fixed: false,
-                    trackScroll: false // Desativado no modo global, injetamos pelo GSAP Scrub abaixo
-                });
+                // Atrasamos a inicialização para acelerar o carregamento inicial da página (First Contentful Paint)
+                setTimeout(() => {
+                    scrollyVideo = new ScrollyVideo({
+                        scrollyVideoContainer: "video-engine-container",
+                        src: "Vídeo_pronto_com_zoom_preto.mp4",
+                        cover: true,
+                        fixed: false,
+                        trackScroll: false // Desativado no modo global, injetamos pelo GSAP Scrub abaixo
+                    });
 
-                // Suaviza o aparecimento inicial do vídeo
-                setTimeout(() => { 
-                    const container = document.getElementById('video-engine-container');
-                    if (container) container.style.opacity = '1'; 
-                }, 800);
+                    // Suaviza o aparecimento inicial do vídeo
+                    setTimeout(() => { 
+                        const container = document.getElementById('video-engine-container');
+                        if (container) container.style.opacity = '1'; 
+                    }, 600);
+                }, 200);
             }
 
             const progressText = document.getElementById('scroll-percentage');
@@ -518,7 +517,7 @@
             ScrollTrigger.create({
                 trigger: "#hero-section",
                 start: "top top",
-                end: "+=250%", // Uma longa distância garante um slow-scroll limpo para o vídeo, sem "travar" a página.
+                end: () => window.innerWidth < 768 ? "+=120%" : "+=250%", // Reduzido no mobile para sair da primeira dobra mais rápido
                 pin: true,
                 scrub: 1, // Suaviza o stuttering de forma cinematográfica
                 onUpdate: (self) => {
@@ -541,7 +540,7 @@
                 scrollTrigger: { 
                     trigger: "#hero-section", 
                     start: "top top", 
-                    end: "+=60%", 
+                    end: () => window.innerWidth < 768 ? "+=40%" : "+=60%", 
                     scrub: true 
                 }
             });
