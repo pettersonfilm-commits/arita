@@ -69,13 +69,8 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         .video-container {
-            position: fixed; top: -1vh; left: -1vw; width: 102vw; height: 102vh; z-index: -2; overflow: hidden; background-color: #000;
-            /* Tratamento Cinematográfico de Cor, Contraste e Remoção de Blur */
+            position: absolute; top: -1vh; left: -1vw; width: 102vw; height: 102vh; z-index: 0; overflow: hidden; background-color: #000;
             filter: grayscale(15%) contrast(1.15) brightness(0.95);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
         }
 
         /* Garante preenchimento absoluto em Mobile para o Canvas ou a Tag de Vídeo interna */
@@ -85,9 +80,9 @@
             object-fit: cover !important; 
         }
 
-        /* Altura calculada para distribuir os frames de vídeo perfeitamente a cada rolagem do mouse sem afogar a animação */
-        .scroll-area { position: relative; height: 150vh; z-index: 10; pointer-events: none; }
-        .content-layer { pointer-events: auto; }
+        /* Hero Section */
+        .hero-area { position: relative; height: 100vh; width: 100%; z-index: 10; overflow: hidden; }
+        .content-layer { position: relative; width: 100%; height: 100%; z-index: 10; }
 
         html.lenis, html.lenis body { height: auto; }
         .lenis.lenis-smooth { scroll-behavior: auto !important; }
@@ -128,17 +123,17 @@
         </div>
     </header>
 
-    <!-- WebCodecs / Canvas Native Video Engine (ScrollyVideo) -->
-    <div class="video-container transition-opacity duration-[2s] ease-out" id="video-engine-container" style="opacity: 0;">
-    </div>
-    
-    <!-- Dark Gradient Overlay -->
-    <div class="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none" style="background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%);"></div>
+    <!-- Hero Pinned Area -->
+    <main class="hero-area" id="hero-section">
+        
+        <!-- WebCodecs / Canvas Video Engine (ScrollyVideo) -->
+        <div class="video-container transition-opacity duration-[2s] ease-out" id="video-engine-container" style="opacity: 0;"></div>
+        
+        <!-- Dark Gradient Overlay -->
+        <div class="absolute inset-0 z-[1] pointer-events-none" style="background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%);"></div>
 
-    <!-- Scroll Track -->
-    <main class="scroll-area" id="scroll-track">
-        <div class="fixed top-0 left-0 w-full h-full text-white content-layer flex items-center">
-            <div class="w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 relative h-full pt-[80px]">
+        <div class="w-full text-white content-layer flex items-center absolute inset-0 pt-[80px]">
+            <div class="w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 relative pb-20">
                 
                 <div class="col-span-1 md:col-span-8 flex flex-col justify-center h-full z-10 pb-16">
                     <h1 class="text-[3rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[7.5rem] font-semibold tracking-tighter leading-[0.85] mb-6 sm:mb-8" id="hero-title">
@@ -473,8 +468,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/scrolly-video@latest/dist/scrolly-video.js"></script>
-    
-    <!-- WebCodecs / Canvas Native Video Engine implemented via ScrollyVideo & GSAP -->
+    <!-- Native Background Video Engine -->
 
     <!-- Interactions -->
     <script>
@@ -498,7 +492,7 @@
             ScrollTrigger.config({ ignoreMobileResize: true });
 
             /* ========================================================
-               SCROLLYVIDEO.JS - DEFINITIVE NATIVE MP4 DECODING TECH
+               SCROLLYVIDEO.JS - NATIVE MP4 DECODING TECH
                ======================================================== */
             let scrollyVideo = null;
             if (typeof ScrollyVideo !== 'undefined') {
@@ -510,7 +504,7 @@
                     trackScroll: false // Desativado no modo global, injetamos pelo GSAP Scrub abaixo
                 });
 
-                // Soft fade in of the video container when it starts rendering
+                // Suaviza o aparecimento inicial do vídeo
                 setTimeout(() => { 
                     const container = document.getElementById('video-engine-container');
                     if (container) container.style.opacity = '1'; 
@@ -520,32 +514,36 @@
             const progressText = document.getElementById('scroll-percentage');
             const progressBar = document.querySelector('.scroll-progress-bar');
             
-            gsap.timeline({
-                scrollTrigger: {
-                    trigger: "#scroll-track", 
-                    start: "top top", 
-                    end: "bottom top", 
-                    scrub: 1.5, 
-                    onUpdate: (self) => {
-                        const percent = Math.round(self.progress * 100);
-                        progressText.innerText = percent.toString().padStart(2, '0');
-                        if (progressBar) gsap.set(progressBar, { y: Math.max(0, self.progress * 64) }); 
-                        
-                        // Use precise tech (ScrollyVideo) for perfect fluid scrubbing without lag
-                        if (scrollyVideo) {
-                            // Ignora os primeiros frames muito escuros (se desejar) ou manda a 0 progress
-                            const smoothProgress = 0.10 + (self.progress * 0.90);
-                            scrollyVideo.setTargetTimePercent(smoothProgress);
-                        }
+            // Fixa (Pin) o Hero por uma distância suficiente (250% = mais devagar, sem aceleração)
+            ScrollTrigger.create({
+                trigger: "#hero-section",
+                start: "top top",
+                end: "+=250%", // Uma longa distância garante um slow-scroll limpo para o vídeo, sem "travar" a página.
+                pin: true,
+                scrub: 1, // Suaviza o stuttering de forma cinematográfica
+                onUpdate: (self) => {
+                    // Texto do percentual / Sidebar
+                    if (progressText) progressText.innerText = Math.round(self.progress * 100).toString().padStart(2, '0');
+                    if (progressBar) gsap.set(progressBar, { y: Math.max(0, self.progress * 64) }); 
+
+                    // Atualiza Frames
+                    if (scrollyVideo) {
+                        // Começa levemente pulado do zero para tirar as telas brancas, e zera perfeitamente na preta final
+                        const smoothProgress = 0.05 + (self.progress * 0.95);
+                        scrollyVideo.setTargetTimePercent(smoothProgress);
                     }
                 }
             });
 
-
-            // Fade out do conteúdo tipográfico logo no início do scroll para dar feedback imediato (sem delay)
+            // O Texto vai sumir um pouco antes (no início da rolagem)
             gsap.to('.content-layer', {
                 opacity: 0, y: -150, ease: "power2.inOut",
-                scrollTrigger: { trigger: "#scroll-track", start: "top top", end: "40% top", scrub: true }
+                scrollTrigger: { 
+                    trigger: "#hero-section", 
+                    start: "top top", 
+                    end: "+=60%", 
+                    scrub: true 
+                }
             });
 
             /* ========================================================
