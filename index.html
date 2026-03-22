@@ -128,10 +128,8 @@
         </div>
     </header>
 
-    <!-- Parallax Native Video Engine -->
-    <div class="video-container" id="video-engine-container">
-        <!-- Uso de media fragment #t=0.1 pula frames nulos instantaneamente. Opacity zero + fade suaviza o load. -->
-        <video id="hero-bg-video" src="Vídeo_pronto_com_zoom_preto.mp4#t=0.1" autoplay muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[2s] ease-out" style="opacity: 0;"></video>
+    <!-- WebCodecs / Canvas Native Video Engine (ScrollyVideo) -->
+    <div class="video-container transition-opacity duration-[2s] ease-out" id="video-engine-container" style="opacity: 0;">
     </div>
     
     <!-- Dark Gradient Overlay -->
@@ -474,8 +472,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scrolly-video@latest/dist/scrolly-video.js"></script>
     
-    <!-- Native HTML5 Decoding Engine implemented below via GSAP -->
+    <!-- WebCodecs / Canvas Native Video Engine implemented via ScrollyVideo & GSAP -->
 
     <!-- Interactions -->
     <script>
@@ -499,39 +498,23 @@
             ScrollTrigger.config({ ignoreMobileResize: true });
 
             /* ========================================================
-               NATIVE HTML5 VIDEO DECODING (Alta Compatibilidade p/ Novos Codecs)
+               SCROLLYVIDEO.JS - DEFINITIVE NATIVE MP4 DECODING TECH
                ======================================================== */
-            const heroVideo = document.getElementById('hero-bg-video');
-            
-            if (heroVideo) {
-                // Mobile Hack: Força o Safari/iOS a carregar os frames liberando o play via JS
-                const initMobileVideo = () => {
-                    // Nós apenas iniciamos o play para desbloquear o buffer nativo e logo em seguida pausamos para o GSAP agir.
-                    const playPromise = heroVideo.play();
-                    if (playPromise !== undefined) {
-                        playPromise.then(() => {
-                            heroVideo.pause(); 
-                        }).catch(e => { console.warn("Autoplay prevents video load", e); });
-                    }
-                };
-
-                // Executa na inicialização e logo na primeira interação tátil (Crucial para iOS Low Power Mode)
-                initMobileVideo();
-                document.body.addEventListener('touchstart', initMobileVideo, { once: true, passive: true });
-                
-                // Revela o vídeo suavemente (transição CSS) assim que puder tocar o frame decodificado
-                heroVideo.addEventListener('canplay', () => {
-                    heroVideo.style.opacity = '1';
-                }, { once: true });
-                
-                // Fallback de segurança fortíssimo: se estiver demorando na rede 3G, mostramos pra não parecer quebrado
-                setTimeout(() => { heroVideo.style.opacity = '1'; }, 1500);
-
-                heroVideo.addEventListener('loadedmetadata', () => { 
-                    // Se houver autoplay natural, já pausamos antes que o usuário veja
-                    heroVideo.pause();
-                    heroVideo.currentTime = heroVideo.duration * 0.10; 
+            let scrollyVideo = null;
+            if (typeof ScrollyVideo !== 'undefined') {
+                scrollyVideo = new ScrollyVideo({
+                    scrollyVideoContainer: "video-engine-container",
+                    src: "Vídeo_pronto_com_zoom_preto.mp4",
+                    cover: true,
+                    fixed: false,
+                    trackScroll: false // Desativado no modo global, injetamos pelo GSAP Scrub abaixo
                 });
+
+                // Soft fade in of the video container when it starts rendering
+                setTimeout(() => { 
+                    const container = document.getElementById('video-engine-container');
+                    if (container) container.style.opacity = '1'; 
+                }, 800);
             }
 
             const progressText = document.getElementById('scroll-percentage');
@@ -548,10 +531,11 @@
                         progressText.innerText = percent.toString().padStart(2, '0');
                         if (progressBar) gsap.set(progressBar, { y: Math.max(0, self.progress * 64) }); 
                         
-                        // Queima os primeiros 10% muito parados e rola o resto na suavidade do Scrub de 1.5s
-                        if (heroVideo && heroVideo.readyState >= 1) {
+                        // Use precise tech (ScrollyVideo) for perfect fluid scrubbing without lag
+                        if (scrollyVideo) {
+                            // Ignora os primeiros frames muito escuros (se desejar) ou manda a 0 progress
                             const smoothProgress = 0.10 + (self.progress * 0.90);
-                            heroVideo.currentTime = smoothProgress * heroVideo.duration;
+                            scrollyVideo.setTargetTimePercent(smoothProgress);
                         }
                     }
                 }
