@@ -496,14 +496,17 @@
                 setTimeout(() => {
                     scrollyVideo = new ScrollyVideo({
                         scrollyVideoContainer: "video-engine-container",
-                        src: "Vídeo_pronto_com_zoom_preto.mp4",
+                        src: encodeURI("Vídeo_pronto_com_zoom_preto.mp4"),
                         cover: true,
                         fixed: false,
                         trackScroll: false // Desativado no modo global, injetamos pelo GSAP Scrub abaixo
                     });
 
-                    // Suaviza o aparecimento inicial do vídeo
+                    // Força a renderização do primeiro frame pra ele não desaparecer no load inicial
                     setTimeout(() => { 
+                        if (scrollyVideo && typeof scrollyVideo.setTargetTimePercent === 'function') {
+                            scrollyVideo.setTargetTimePercent(0.05);
+                        }
                         const container = document.getElementById('video-engine-container');
                         if (container) container.style.opacity = '1'; 
                     }, 600);
