@@ -6,6 +6,9 @@
     <title>Arita - Videomaker Premium</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23ff3333'/></svg>">
     
+    <!-- Preload Hero Video -->
+    <link rel="preload" href="Vídeo_pronto_com_zoom_preto.mp4" as="video" type="video/mp4">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -127,7 +130,8 @@
 
     <!-- Parallax Native Video Engine -->
     <div class="video-container" id="video-engine-container">
-        <video id="hero-bg-video" src="Vídeo_pronto_com_zoom_preto.mp4" muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover"></video>
+        <!-- Uso de media fragment #t=0.1 pula frames nulos instantaneamente. Opacity zero + fade suaviza o load. -->
+        <video id="hero-bg-video" src="Vídeo_pronto_com_zoom_preto.mp4#t=0.1" muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[2s] ease-out" style="opacity: 0;"></video>
     </div>
     
     <!-- Dark Gradient Overlay -->
@@ -498,9 +502,16 @@
                NATIVE HTML5 VIDEO DECODING (Alta Compatibilidade p/ Novos Codecs)
                ======================================================== */
             const heroVideo = document.getElementById('hero-bg-video');
-            // Força decodificação do primeiro frame (pulando 10% do preto/estático)
+            
             if (heroVideo) {
-                heroVideo.load();
+                // Revela o vídeo suavemente (transição CSS) assim que puder tocar o frame decodificado
+                heroVideo.addEventListener('canplay', () => {
+                    heroVideo.style.opacity = '1';
+                }, { once: true });
+                
+                // Fallback de segurança para garantir a exibição do vídeo após 1.5s no máximo
+                setTimeout(() => { heroVideo.style.opacity = '1'; }, 1500);
+
                 heroVideo.addEventListener('loadedmetadata', () => { 
                     heroVideo.currentTime = heroVideo.duration * 0.10; 
                 });
